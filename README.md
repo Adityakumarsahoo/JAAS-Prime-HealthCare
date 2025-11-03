@@ -80,5 +80,4 @@ It supports:
 ---
 
 
-  BSEC -->|Authorize by role: ADMIN/DOCTOR/PATIENT| BE
-
+ 
