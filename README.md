@@ -83,69 +83,6 @@ It supports:
 
 Below is the full interaction flow between **React Frontend** and **Spring Boot Backend**:
 
-```mermaid
-flowchart LR
-  %% Frontend Areas
-  subgraph FE[Frontend]
-    FE_Login[Login.jsx]
-    FE_Doctors[Doctors.jsx / AppContext]
-    FE_Appointment[Appointment.jsx (/appointment/:docId)]
-    FE_PatientDash[PatientDashboard.jsx]
-    FE_DoctorDash[DoctorDashboard.jsx]
-    FE_AdminDash[Admin Dashboard.jsx]
-    FE_AdminPages[Admin Appointments/Doctors/Patients]
-    FE_Services[UserService.jsx (axios instance)]
-  end
-
-  %% Backend Areas
-  subgraph BE[Backend]
-    BSEC[SecurityConfig + JWT Filter]
-    BAUTHC[AuthController (/api/auth)]
-    BAUTHS[AuthServiceImpl]
-    BJWTS[JwtService]
-    BDC[DoctorController (/api/doctors)]
-    BPSC[PatientController (/api/patients)]
-    BAC[AppointmentController (/api/appointments)]
-    BADMC[AdminController (/api/admin)]
-    BDAOs[DoctorDao / PatientDao / AppointmentDao]
-    BSVCs[DoctorServiceImpl / PatientServiceImpl / AppointmentServiceImpl]
-    BEVT[EventStreamService (SSE)]
-  end
-
-  FE_Services -- baseURL: VITE_BACKEND_URL → BE
-  FE_Services -- attaches Authorization: Bearer aToken → BE
-
-  FE_Login -- POST /api/auth/login → BAUTHC
-  BAUTHC --> BAUTHS
-  BAUTHS -->|Valid user| BJWTS
-  BJWTS -->|JWT issued| FE_Login
-  FE_Login -->|stores aToken, role| FE_Services
-  BAUTHS -->|Admin via properties| BJWTS
-
-  FE_Login -- POST /api/auth/register → BAUTHC
-  BAUTHC --> BAUTHS --> BDAOs --> FE_Login
-
-  FE_Doctors -- GET /api/doctors → BDC
-  BDC --> BSVCs --> BDAOs --> FE_Doctors
-  FE_Doctors -->|navigate| FE_Appointment
-
-  FE_Appointment -- POST /api/appointments/book → BAC
-  BAC --> BSVCs --> BDAOs --> BAC
-  BAC -->|emit 'appointment_booked'| BEVT
-  BEVT -->|SSE| FE_AdminDash
-
-  FE_PatientDash -- GET /api/patients/profile → BPSC
-  FE_PatientDash -- GET /api/appointments/me → BAC
-  BAC --> BSVCs --> BDAOs --> FE_PatientDash
-
-  FE_DoctorDash -- GET /api/appointments/doctor/me → BAC
-  BAC --> BSVCs --> BDAOs --> FE_DoctorDash
-
-  FE_AdminPages -- GET /api/appointments → BAC
-  FE_AdminPages -- PUT /api/appointments/{id}/status?status=APPROVED|REJECTED → BAC
-  BAC --> BSVCs --> BDAOs
-  FE_AdminPages -- GET /api/admin/doctors → BADMC
-  FE_AdminPages -- GET /api/admin/users → BADMC
   FE_AdminPages -- GET /api/admin/patients/pending → BADMC
   FE_AdminDash -- GET /api/admin/events (SSE) → BADMC
 
