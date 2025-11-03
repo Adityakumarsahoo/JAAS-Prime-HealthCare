@@ -79,13 +79,6 @@ It supports:
 
 ---
 
-## 🧭 System Architecture (Frontend ↔ Backend)
 
-Below is the full interaction flow between **React Frontend** and **Spring Boot Backend**:
-
-  FE_AdminPages -- GET /api/admin/patients/pending → BADMC
-  FE_AdminDash -- GET /api/admin/events (SSE) → BADMC
-
-  FE_Services --> BSEC
   BSEC -->|Authorize by role: ADMIN/DOCTOR/PATIENT| BE
 
